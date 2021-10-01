@@ -71,4 +71,5 @@ func main() {
 	var l PersonList
 	json.Unmarshal([]byte(jsonstr2), &l)
 	l.printAll()
+	fmt.Println("Yes, yyds!")
 }
