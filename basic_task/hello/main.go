@@ -1,27 +1,34 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
+	//	"encoding/json"
+	//	"fmt"
+	"log"
 	"net/http"
+
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
+var json gin.H
+
+func sendJsonApi(c *gin.Context) {
+	json = gin.H{}
+	if err := c.BindJSON(&json); err != nil {
+		log.Fatal(err.Error())
+	}
+}
+
 func addTimestampApi(c *gin.Context) {
-	var path = c.FullPath()
-	fmt.Println(path)
-	var jsonstr = c.DefaultQuery("json", "{}")
-	var obj gin.H
-	json.Unmarshal([]byte(jsonstr), &obj)
-	obj["timestamp"] = time.Now().Unix()
-	c.JSON(http.StatusOK, obj)
+	json["timestamp"] = time.Now().Unix()
+	c.JSON(http.StatusOK, json)
 }
 
 func setupRouter() *gin.Engine {
 	var r = gin.Default()
 
+	r.POST("/sendjson", sendJsonApi)
 	r.GET("/hello", addTimestampApi)
 
 	return r
