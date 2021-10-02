@@ -1,15 +1,26 @@
 package v1
 
-import "github.com/gin-gonic/gin"
+import (
+	"blog/model"
+	"blog/utils/errmsg"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 //注册
 func SignIn(c *gin.Context) {
-
-}
-
-//查询用户是否已存在
-func IsUserExist(c *gin.Context) {
-
+	var data model.User
+	_ = c.ShouldBindJSON(&data)
+	var code = model.IsUserExist(data.Username)
+	if code == errmsg.SUCCEED {
+		model.CreateUser(&data)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": code,
+		"data":   data,
+		"errmsg": errmsg.GetErrMsg(code),
+	})
 }
 
 //查看个人页

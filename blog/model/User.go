@@ -1,6 +1,10 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"blog/utils/errmsg"
+
+	"gorm.io/gorm"
+)
 
 type Information struct {
 	Birthday         string `gorm:"type:varchar(20)" json:"birthday"`
@@ -23,4 +27,23 @@ type User struct {
 
 	//个人信息
 	Information `gorm:"embedded"`
+}
+
+//新增用户
+func CreateUser(data *User) errmsg.ErrCode {
+	var err = db.Create(&data).Error
+	if err != nil {
+		return errmsg.ERROR
+	}
+	return errmsg.SUCCEED
+}
+
+//查询用户是否存在
+func IsUserExist(username string) errmsg.ErrCode {
+	var usr User
+	db.Model(&User{}).Select("id").Where("username = ?", username).First(&usr)
+	if usr.ID > 0 {
+		return errmsg.ERROR_USERNAME_USED
+	}
+	return errmsg.SUCCEED
 }
