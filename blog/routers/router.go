@@ -2,7 +2,6 @@ package routers
 
 import (
 	"blog/utils"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,11 +13,12 @@ func InitRouter() *gin.Engine {
 
 	var api_v1 = r.Group("api/v1")
 	{
-		api_v1.GET("/hello", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "ok",
-			})
-		})
+		//用户管理接口
+
+		//文章管理接口
+
+		//分类管理接口
+
 	}
 
 	return r
