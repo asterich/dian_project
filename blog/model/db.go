@@ -25,7 +25,7 @@ func InitDb() {
 		log.Fatalln("Failed to get *sql.DB, err: ", err1.Error())
 	}
 
-	db.AutoMigrate()
+	db.AutoMigrate(&User{}, &Article{}, &Category{}, &Tag{})
 
 	// SetMaxIdleConns 用于设置连接池中空闲连接的最大数量。
 	sqlDB.SetMaxIdleConns(10)
