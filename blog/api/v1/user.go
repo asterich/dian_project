@@ -17,11 +17,6 @@ func GetUserPage(c *gin.Context) {
 
 }
 
-//查询单个用户
-func GetOneUser(c *gin.Context) {
-
-}
-
 //查询用户列表
 func GetUserList(c *gin.Context) {
 
