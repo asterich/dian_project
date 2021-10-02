@@ -1,5 +1,7 @@
 package errmsg
 
+type ErrCode int
+
 const (
 	SUCCEED = 200
 	ERROR   = 500
@@ -28,7 +30,7 @@ const (
 	ERROR_TAG_ALREADY_EXIXTS = 4002 //标签已存在
 )
 
-var codeMsg = map[int]string{
+var codeMsg = map[ErrCode]string{
 	SUCCEED: "OK",
 	ERROR:   "Fail",
 
@@ -46,6 +48,6 @@ var codeMsg = map[int]string{
 	ERROR_TAG_ALREADY_EXIXTS: "tag已存在",
 }
 
-func GetErrMsg(code int) string {
+func GetErrMsg(code ErrCode) string {
 	return codeMsg[code]
 }
