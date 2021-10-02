@@ -45,3 +45,7 @@ var codeMsg = map[int]string{
 	ERROR_TAG_DOES_NOT_EXIST: "tag已存在",
 	ERROR_TAG_ALREADY_EXIXTS: "tag已存在",
 }
+
+func GetErrMsg(code int) string {
+	return codeMsg[code]
+}
