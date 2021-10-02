@@ -10,12 +10,13 @@ import (
 	"gorm.io/gorm/schema"
 )
 
+var db, err = gorm.Open(sqlite.Open(utils.DbPath), &gorm.Config{
+	NamingStrategy: schema.NamingStrategy{
+		SingularTable: true,
+	},
+})
+
 func InitDb() {
-	var db, err = gorm.Open(sqlite.Open(utils.DbPath), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
-		},
-	})
 	if err != nil {
 		log.Fatalln("Failed to connect database! err: ", err.Error())
 	}
