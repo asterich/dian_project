@@ -37,6 +37,6 @@ func InitDb() {
 	// SetConnMaxLifetime 设置了连接可复用的最大时间。
 	sqlDB.SetConnMaxLifetime(10 * time.Second)
 
-	sqlDB.Close()
+	//	sqlDB.Close()
 
 }
