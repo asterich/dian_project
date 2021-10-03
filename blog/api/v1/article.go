@@ -28,7 +28,6 @@ func GetArticle(c *gin.Context) {
 		"description":   string
 		"cateid":        int
 		"authorid":      int
-		"upvotes":       int
 		"contents":      string
 		"img":           string
 	}
@@ -45,6 +44,15 @@ func CreateArticle(c *gin.Context) {
 }
 
 //修改文章
+//请求的JSON格式为：
+/*
+	{
+		"title":         string
+		"description":   string
+		"contents":      string
+		"img":           string
+	}
+*/
 func EditArticle(c *gin.Context) {
 	var id, _ = strconv.Atoi(c.Param("id"))
 	var article gin.H
