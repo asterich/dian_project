@@ -50,7 +50,7 @@ func GetUserList(c *gin.Context) {
 }
 
 //编辑个人信息
-//请求的格式为：
+//请求的JSON格式为：
 /*
 	"birthday":		string
 	"email":		string
