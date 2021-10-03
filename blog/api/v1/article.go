@@ -12,15 +12,27 @@ import (
 //查看文章
 func GetArticle(c *gin.Context) {
 	var id, _ = strconv.Atoi(c.Param("id"))
-	var info, code = model.GetArticle(id)
+	var data, code = model.GetArticle(id)
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
-		"info":    info,
+		"data":    data,
 		"message": errmsg.GetErrMsg(code),
 	})
 }
 
 //创建文章
+//请求的JSON格式为：
+/*
+	{
+		"title":         string
+		"description":   string
+		"cateid":        int
+		"authorid":      int
+		"upvotes":       int
+		"contents":      string
+		"img":           string
+	}
+*/
 func CreateArticle(c *gin.Context) {
 	var data model.Article
 	_ = c.ShouldBindJSON(&data)
