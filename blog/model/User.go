@@ -64,7 +64,7 @@ func GetUserInfo(id int) (gin.H, errmsg.ErrCode) {
 		"selfintro": usr.SelfIntro,
 	}
 	if err != nil {
-		log.Println("Failed to get user page")
+		log.Println("Failed to get user page, err: ", err)
 		return info, errmsg.ERROR
 	}
 	return info, errmsg.SUCCEED
