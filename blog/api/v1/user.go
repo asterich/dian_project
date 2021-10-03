@@ -26,7 +26,7 @@ func SignIn(c *gin.Context) {
 	})
 }
 
-//查看个人页
+//查看个人页（查找个人信息）
 func GetUserInfo(c *gin.Context) {
 	var id, _ = strconv.Atoi(c.Param("id"))
 	var info, code = model.GetUserInfo(id)
