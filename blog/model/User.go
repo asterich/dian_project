@@ -1,6 +1,7 @@
 package model
 
 import (
+	"blog/utils"
 	"blog/utils/errmsg"
 	"log"
 
@@ -12,7 +13,7 @@ type Information struct {
 	Birthday  string `gorm:"type:varchar(20)" json:"birthday"`
 	Email     string `gorm:"type:varchar(20)" json:"email"`
 	QQ        string `gorm:"type:varchar(20)" json:"qq"`
-	SelfIntro string `gorm:"type:text" json:"selfintro"`
+	SelfIntro string `gorm:"type:text;column:selfintro" json:"selfintro"`
 }
 
 type User struct {
@@ -80,15 +81,40 @@ func GetUserList(PageSize int, PageNum int) []User {
 }
 
 //编辑个人信息
-func EditInformation(id int, data *User) errmsg.ErrCode {
-	var infoMap = make(gin.H)
-	infoMap["birthday"] = data.Birthday
-	infoMap["email"] = data.Email
-	infoMap["qq"] = data.QQ
-	infoMap["selfintro"] = data.SelfIntro
-	var err = db.Model(&User{}).Where("id = ?", id).Updates(infoMap).Error
+func EditInformation(id int, data gin.H) errmsg.ErrCode {
+	var err = db.Model(&User{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"birthday":  data["birthday"],
+		"email":     data["email"],
+		"qq":        data["qq"],
+		"selfintro": data["selfintro"],
+	}).Error
 	if err != nil {
 		log.Println("Failed to edit user information, err: ", err.Error())
+		return errmsg.ERROR
+	}
+	return errmsg.SUCCEED
+}
+
+//修改密码
+func ChangePassword(id int, oldpwd string, newpwd string) errmsg.ErrCode {
+	var usr User
+	var err1 = db.Model(&User{}).Where("id = ?", id).First(&usr).Error
+	if err1 != nil {
+		log.Println("User doesn't exist")
+		return errmsg.ERROR
+	}
+	var isPwdCorrect, codeerr2 = utils.ValidatePassword(usr.Password, oldpwd)
+	if !isPwdCorrect {
+		log.Println("Password incorrect")
+		return errmsg.ERROR_PASSWORD_INCORRECT
+	} else if codeerr2 == errmsg.ERROR {
+		log.Println("Failed to validate password")
+		return errmsg.ERROR
+	}
+	var hashedNewpwd, _ = utils.GeneratePassword(newpwd)
+	var err3 = db.Model(&User{}).Where("id = ?", id).Update("password", hashedNewpwd).Error
+	if err3 != nil {
+		log.Println("Failed to change password")
 		return errmsg.ERROR
 	}
 	return errmsg.SUCCEED

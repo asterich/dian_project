@@ -18,8 +18,8 @@ func InitRouter() *gin.Engine {
 		api_v1.POST("user/signin", v1.SignIn)
 		api_v1.GET("user/:id", v1.GetUserInfo)
 		api_v1.GET("users", v1.GetUserList)
-		api_v1.POST("user/edit/info", v1.EditInformation)
-		api_v1.POST("user/edit/password", v1.ChangePassword)
+		api_v1.POST("user/:id/edit", v1.EditInformation)
+		api_v1.POST("user/:id/changepwd", v1.ChangePassword)
 		api_v1.DELETE("user/:id", v1.DeleteUser)
 
 		//文章管理接口

@@ -50,21 +50,55 @@ func GetUserList(c *gin.Context) {
 }
 
 //编辑个人信息
+//请求的格式为：
+/*
+	"birthday":		string
+	"email":		string
+	"qq":			string
+	"selfintro":	string
+*/
 func EditInformation(c *gin.Context) {
-
+	var id, _ = strconv.Atoi(c.Param("id"))
+	var info gin.H
+	_ = c.ShouldBindJSON(&info)
+	var code = model.EditInformation(id, info)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+	})
 }
 
 //修改密码
-func ChangePassword(c *gin.Context) {
+//请求的JSON格式为：
+/*
+{
+	"oldpassword": string,
+	"newpassword": string
+}
+*/
 
+type pwdToChange struct {
+	OldPassword string `json:"oldpassword"`
+	NewPassword string `json:"newpassword"`
+}
+
+func ChangePassword(c *gin.Context) {
+	var id, _ = strconv.Atoi(c.Param("id"))
+	var pwds pwdToChange
+	_ = c.ShouldBindJSON(&pwds)
+	var code = model.ChangePassword(id, string(pwds.OldPassword), pwds.NewPassword)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+	})
 }
 
 //删除用户
 func DeleteUser(c *gin.Context) {
 	var id, _ = strconv.Atoi(c.Param("id"))
-	var errcode = model.DeleteUser(id)
+	var code = model.DeleteUser(id)
 	c.JSON(http.StatusOK, gin.H{
-		"status":  errcode,
-		"message": errmsg.GetErrMsg(errcode),
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
 	})
 }
