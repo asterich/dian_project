@@ -24,7 +24,7 @@ func CreateCategory(cate *Category) errmsg.ErrCode {
 //查询分类名是否已被占用
 func IsCategoryNameUsed(catename string) errmsg.ErrCode {
 	var cate Category
-	db.Model(&Category{}).Select("id").Where("name = ?", cate.Name).First(&cate)
+	db.Model(&Category{}).Select("id").Where("name = ?", catename).First(&cate)
 	if cate.ID > 0 {
 		return errmsg.ERROR_CATEGORY_ALREADY_EXIXTS
 	}

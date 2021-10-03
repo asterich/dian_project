@@ -10,6 +10,12 @@ import (
 )
 
 //创建分类
+//请求的JSON格式为：
+/*
+	{
+		"name": string
+	}
+*/
 func CreateCategory(c *gin.Context) {
 	var category model.Category
 	_ = c.ShouldBindJSON(&category)
