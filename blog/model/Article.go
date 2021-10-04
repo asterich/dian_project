@@ -10,13 +10,14 @@ import (
 
 type Article struct {
 	gorm.Model
-	Title       string `gorm:"type:varchar(200);not null" json:"title"`       //文章标题
-	Description string `gorm:"type:varchar(200);not null" json:"description"` //文章描述
-	CateID      int    `gorm:"type:int;not null" json:"cateid"`               //分类ID
-	AuthorID    int    `gorm:"type:int;not null" json:"authorid"`             //作者ID
-	Upvotes     int    `gorm:"type:int;not null" json:"upvotes"`              //点赞数
-	Contents    string `gorm:"type:text;not null" json:"contents"`            //内容
-	Img         string `gorm:"type:text;not null" json:"img"`                 //图片
+	Title       string   `gorm:"type:varchar(200);not null" json:"title"`       //文章标题
+	Description string   `gorm:"type:varchar(200);not null" json:"description"` //文章描述
+	CateID      int      `gorm:"type:int;not null" json:"cateid"`               //分类ID
+	AuthorID    int      `gorm:"type:int;not null" json:"authorid"`             //作者ID
+	Upvotes     int      `gorm:"type:int;not null" json:"upvotes"`              //点赞数
+	Contents    string   `gorm:"type:longtext;not null" json:"contents"`        //内容
+	Img         string   `gorm:"type:text;not null" json:"img"`                 //图片
+	Category    Category `gorm:"foreignkey:CateID"`
 }
 
 //获取文章

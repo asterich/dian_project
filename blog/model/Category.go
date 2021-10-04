@@ -41,9 +41,19 @@ func GetCategoryList() []Category {
 	return cates
 }
 
-//查找分类上的文章
-func GetArticlesUnderCategory() {
-
+//查找分类下的文章
+func GetArticlesUnderCategory(PageSize int, PageNum int, cateid int) ([]Article, errmsg.ErrCode) {
+	var articles []Article
+	var err = db.Model(&Article{}).
+		Preload("Category").
+		Where("cate_id = ?", cateid).
+		Limit(PageSize).
+		Offset((PageNum - 1) * PageSize).
+		Find(&articles).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, errmsg.ERROR
+	}
+	return articles, errmsg.SUCCEED
 }
 
 //删除分类
