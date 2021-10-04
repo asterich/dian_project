@@ -52,10 +52,12 @@ func GetUserList(c *gin.Context) {
 //编辑个人信息
 //请求的JSON格式为：
 /*
+{
 	"birthday":		string
 	"email":		string
 	"qq":			string
 	"selfintro":	string
+}
 */
 func EditInformation(c *gin.Context) {
 	var id, _ = strconv.Atoi(c.Param("id"))

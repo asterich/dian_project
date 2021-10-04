@@ -9,8 +9,10 @@ import (
 var (
 
 	// Server configs
-	AppMode  string
-	HttpPort string
+	AppMode      string
+	HttpPort     string
+	JwtKey       string
+	MaxLoginTime uint
 
 	// Database configs
 	Db     string
@@ -31,6 +33,8 @@ func LoadServer(file *ini.File) {
 	var serverSection = file.Section("server")
 	AppMode = serverSection.Key("AppMode").String()
 	HttpPort = serverSection.Key("HttpPort").String()
+	JwtKey = serverSection.Key("JwtKey").String()
+	MaxLoginTime = serverSection.Key("JwtKey").MustUint()
 
 }
 

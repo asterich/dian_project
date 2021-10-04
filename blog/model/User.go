@@ -30,6 +30,9 @@ type User struct {
 
 	//个人信息
 	Information `gorm:"embedded"`
+
+	//文章
+	Articles []Article `gorm:"foreignkey:AuthorID"`
 }
 
 //新增用户
@@ -37,6 +40,19 @@ func CreateUser(data *User) errmsg.ErrCode {
 	var err = db.Create(&data).Error
 	if err != nil {
 		return errmsg.ERROR
+	}
+	return errmsg.SUCCEED
+}
+
+//登陆
+func CheckLogin(username string, password string) errmsg.ErrCode {
+	var user User
+	db.Model(&User{}).Where("username = ?", username).First(&user)
+	if user.ID == 0 {
+		return errmsg.ERROR_USER_DOES_NOT_EXIST
+	}
+	if isPwdCorrect, _ := utils.ValidatePassword(user.Password, password); !isPwdCorrect {
+		return errmsg.ERROR_PASSWORD_INCORRECT
 	}
 	return errmsg.SUCCEED
 }
@@ -78,6 +94,16 @@ func GetUserList(PageSize int, PageNum int) []User {
 		return nil
 	}
 	return users
+}
+
+//查询用户写的文章
+func GetArticlesUnderUser(PageSize int, PageNum int) []Article {
+	var articles []Article
+	var err = db.Model(&Article{}).Preload("User").Limit(PageSize).Offset((PageNum - 1) * PageSize).Find(&articles).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil
+	}
+	return articles
 }
 
 //编辑个人信息
