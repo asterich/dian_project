@@ -3,6 +3,7 @@ package middleware
 import (
 	"blog/utils"
 	"blog/utils/errmsg"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -19,7 +20,7 @@ type MyClaims struct {
 }
 
 func GenerateToken(username string) (string, errmsg.ErrCode) {
-	var ExpireTime = time.Now().Add(time.Minute * time.Duration(utils.MaxLoginTime))
+	var ExpireTime = time.Now().Add(240 * time.Minute)
 	var claims = MyClaims{
 		username,
 		jwt.StandardClaims{
@@ -28,20 +29,21 @@ func GenerateToken(username string) (string, errmsg.ErrCode) {
 		},
 	}
 	var reqClaim = jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	var token, err = reqClaim.SignedString(utils.JwtKey)
+	var token, err = reqClaim.SignedString([]byte(utils.JwtKey))
 	if err != nil {
+		log.Println(err)
 		return "", errmsg.ERROR
 	}
 	return token, errmsg.SUCCEED
 }
 
 func ParseToken(token string) (*MyClaims, errmsg.ErrCode) {
-	var reqtoken, _ = jwt.ParseWithClaims(token, &MyClaims{}, func(t *jwt.Token) (interface{}, error) { return JwtKey, nil })
-	var key, jwtcode = reqtoken.Claims.(*MyClaims)
-	if !jwtcode || !reqtoken.Valid {
-		return nil, errmsg.ERROR
+	var reqtoken, err = jwt.ParseWithClaims(token, &MyClaims{}, func(t *jwt.Token) (interface{}, error) { return JwtKey, nil })
+	if key, _ := reqtoken.Claims.(*MyClaims); reqtoken.Valid {
+		return key, errmsg.SUCCEED
 	}
-	return key, errmsg.SUCCEED
+	log.Println(err.Error())
+	return nil, errmsg.ERROR
 }
 
 func JwtToken() gin.HandlerFunc {

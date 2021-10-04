@@ -20,6 +20,9 @@ func InitRouter() *gin.Engine {
 		api_v1.GET("user/:id", v1.GetUserInfo)
 		api_v1.GET("users", v1.GetUserList)
 
+		//登陆系统
+		api_v1.POST("user/login", v1.Login)
+
 		//文章管理接口
 		api_v1.GET("article/:id", v1.GetArticle)
 
@@ -28,7 +31,8 @@ func InitRouter() *gin.Engine {
 		api_v1.GET("category/:id", v1.GetArticlesUnderCategory)
 	}
 
-	var adm = r.Group("api/v1", middleware.JwtToken())
+	var adm = r.Group("api/v1")
+	adm.Use(middleware.JwtToken())
 	admRouter(adm)
 
 	return r

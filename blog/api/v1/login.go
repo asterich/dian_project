@@ -4,6 +4,7 @@ import (
 	"blog/middleware"
 	"blog/model"
 	"blog/utils/errmsg"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,7 +29,9 @@ func Login(c *gin.Context) {
 	var token string
 	var code = model.CheckLogin(data.Username, data.Password)
 	if code == errmsg.SUCCEED {
-		token, _ = middleware.GenerateToken(data.Username)
+		var errcode errmsg.ErrCode
+		token, errcode = middleware.GenerateToken(data.Username)
+		log.Println("errcode:", errcode)
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
