@@ -41,6 +41,16 @@ func GetArticleList(PageSize int, PageNum int) []Article {
 	return articles
 }
 
+//查询文章是否存在
+func DoesArticleExist(articleid int) errmsg.ErrCode {
+	var article Article
+	db.Model(&User{}).Where("id = ?", articleid).First(&article)
+	if article.ID == 0 {
+		return errmsg.ERROR_USERNAME_USED
+	}
+	return errmsg.SUCCEED
+}
+
 //创建文章
 func CreateArticle(article *Article) errmsg.ErrCode {
 	var err = db.Create(&article).Error
@@ -52,13 +62,17 @@ func CreateArticle(article *Article) errmsg.ErrCode {
 
 //修改文章
 func EditArticle(id int, data gin.H) errmsg.ErrCode {
-	var err = db.Model(&Article{}).Where("id = ?", id).Updates(map[string]interface{}{
+	var codeerr = DoesArticleExist(id)
+	if codeerr == errmsg.ERROR_ARTICLE_DOES_NOT_EXIST {
+		return codeerr
+	}
+	var err1 = db.Model(&Article{}).Where("id = ?", id).Updates(map[string]interface{}{
 		"title":       data["title"],
 		"description": data["description"],
 		"contents":    data["contents"],
 		"img":         data["img"],
 	}).Error
-	if err != nil {
+	if err1 != nil {
 		log.Println("Failed to edit article, err: ", err.Error())
 		return errmsg.ERROR
 	}
