@@ -52,6 +52,8 @@ func GetArticlesUnderCategory(PageSize int, PageNum int, cateid int) ([]Article,
 		Find(&articles).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, errmsg.ERROR
+	} else if len(articles) == 0 {
+		return nil, errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
 	}
 	return articles, errmsg.SUCCEED
 }
