@@ -24,7 +24,7 @@ type Article struct {
 func GetArticle(id int) (Article, errmsg.ErrCode) {
 	var article Article
 	var err = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
-	if err.Error() == "record not found" {
+	if err == gorm.ErrRecordNotFound {
 		log.Println("Article does not exist")
 		return article, errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
 	}

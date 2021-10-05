@@ -79,7 +79,10 @@ func GetUserInfo(id int) (gin.H, errmsg.ErrCode) {
 		"qq":        usr.QQ,
 		"selfintro": usr.SelfIntro,
 	}
-	if err != nil {
+	if err == gorm.ErrRecordNotFound {
+		log.Println("User does not exist")
+		return info, errmsg.ERROR_USER_DOES_NOT_EXIST
+	} else if err != nil {
 		log.Println("Failed to get user page, err: ", err)
 		return info, errmsg.ERROR
 	}
