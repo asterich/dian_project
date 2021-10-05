@@ -33,6 +33,7 @@ type User struct {
 
 	//文章
 	//	Articles []Article `gorm:"foreignkey:AuthorID"`
+
 }
 
 //新增用户
