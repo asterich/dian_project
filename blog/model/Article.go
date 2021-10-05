@@ -10,14 +10,16 @@ import (
 
 type Article struct {
 	gorm.Model
-	Title       string   `gorm:"type:varchar(200);not null" json:"title"`       //文章标题
-	Description string   `gorm:"type:varchar(200);not null" json:"description"` //文章描述
-	CateID      int      `gorm:"type:int;not null" json:"cateid"`               //分类ID
-	AuthorID    int      `gorm:"type:int;not null" json:"authorid"`             //作者ID
-	Upvotes     int      `gorm:"type:int;not null" json:"upvotes"`              //点赞数
-	Contents    string   `gorm:"type:longtext;not null" json:"contents"`        //内容
-	Img         string   `gorm:"type:text;not null" json:"img"`                 //图片
-	Category    Category `gorm:"foreignkey:CateID"`
+	Title       string    `gorm:"type:varchar(200);not null" json:"title"`       //文章标题
+	Description string    `gorm:"type:varchar(200);not null" json:"description"` //文章描述
+	CateID      int       `gorm:"type:int;not null" json:"cateid"`               //分类ID
+	AuthorID    int       `gorm:"type:int;not null" json:"authorid"`             //作者ID
+	Upvotes     int       `gorm:"type:int;not null" json:"upvotes"`              //点赞数
+	Contents    string    `gorm:"type:longtext;not null" json:"contents"`        //内容
+	Img         string    `gorm:"type:text;not null" json:"img"`                 //图片
+	Category    Category  `gorm:"foreignkey:CateID"`                             //分类
+	Tags        []Tag     `gorm:"many2many:article_tags"`                        //tag
+	Comments    []Comment `gorm:"foreignkey:ArticleID"`                          //评论
 }
 
 //获取文章
@@ -82,6 +84,59 @@ func EditArticle(id int, data gin.H) errmsg.ErrCode {
 		return errmsg.ERROR
 	}
 	return errmsg.SUCCEED
+}
+
+//往文章里加tag
+func AddTag2Article(id int, tagname string) errmsg.ErrCode {
+	var article Article
+	var tag Tag
+	var err3 = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
+	if err3 != nil {
+		log.Println(err3.Error())
+		return errmsg.ERROR
+	}
+	var err4 = db.Model(&Tag{}).Where("name = ?", tagname).First(&tag).Error
+	if err4 != nil {
+		log.Println(err4.Error(), "tagname: ", tagname)
+		return errmsg.ERROR
+	}
+	article.Tags = append(article.Tags, tag)
+	tag.Articles = append(tag.Articles, article)
+	var err1 = db.Save(&article)
+	var err2 = db.Save(&tag)
+	if err1 != nil || err2 != nil {
+		log.Println("err1: ", err1.Error)
+		log.Println("err2: ", err2.Error)
+		return errmsg.ERROR
+	}
+	return errmsg.SUCCEED
+}
+
+//添加评论
+func AddComment2Article(id int, comment Comment) errmsg.ErrCode {
+	var article Article
+	db.Model(&Article{}).Where("id = ?", id).First(&article)
+	article.Comments = append(article.Comments, comment)
+	var err = db.Save(&article).Error
+	if err != nil {
+		log.Println("Failed to add comment to article, err: ", err.Error())
+		return errmsg.ERROR
+	}
+	return errmsg.SUCCEED
+}
+
+//获取文章下的所有评论
+func GetAllCommentsUnderArticle(id int) ([]Comment, errmsg.ErrCode) {
+	var comments []Comment
+	var article Article
+	var _ = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
+	var _ = db.Model(&Comment{}).Where("article_id = ?", id).Find(&comments).Error
+	//	if err1 != nil || err2 != nil {
+	//		log.Println("err1: ", err1.Error())
+	//		log.Println("err2: ", err2.Error())
+	//		return nil, errmsg.ERROR
+	//	}
+	return comments, errmsg.SUCCEED
 }
 
 //删除文章

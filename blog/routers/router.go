@@ -26,6 +26,7 @@ func InitRouter() *gin.Engine {
 
 		//文章管理接口
 		api_v1.GET("article/:id", v1.GetArticle)
+		api_v1.GET("article/:id/getcomment", v1.GetAllCommentsUnderArticle)
 		api_v1.POST("article/:id/addtag", v1.AddTag2Article)
 		api_v1.POST("article/:id/addcomment", v1.AddComment2Article)
 

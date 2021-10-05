@@ -64,6 +64,50 @@ func EditArticle(c *gin.Context) {
 	})
 }
 
+//往文章里加tag
+func AddTag2Article(c *gin.Context) {
+	var id, _ = strconv.Atoi(c.Param("id"))
+	var tagname = c.Query("tagname")
+	var code = model.AddTag2Article(id, tagname)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
+
+//往文章里添加评论
+//请求格式：
+/*
+	{
+		"username": string,
+		"self_id": int,
+		"parent_id": int,
+		"contents": string
+	}
+*/
+func AddComment2Article(c *gin.Context) {
+	var id, _ = strconv.Atoi(c.Param("id"))
+	var comment model.Comment
+	_ = c.ShouldBindJSON(&comment)
+	var code = model.AddComment2Article(id, comment)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
+
+//获取文章下的所有评论
+func GetAllCommentsUnderArticle(c *gin.Context) {
+	var articleid, _ = strconv.Atoi(c.Param("id"))
+
+	var data, code = model.GetAllCommentsUnderArticle(articleid)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    data,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
+
 //删除文章
 func DeleteArticle(c *gin.Context) {
 	var id, _ = strconv.Atoi(c.Param("id"))

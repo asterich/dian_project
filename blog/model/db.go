@@ -26,7 +26,12 @@ func InitDb() {
 		log.Fatalln("Failed to get *sql.DB, err: ", err1.Error())
 	}
 
-	db.AutoMigrate(&User{}, &Article{}, &Category{}, &Tag{})
+	db.AutoMigrate(&User{}, &Category{}, &Comment{})
+	db.AutoMigrate(&Article{}, &Tag{})
+	err = db.SetupJoinTable(&Article{}, "Tags", &ArticleTag{})
+	if err != nil {
+		log.Fatalln("Failed to build many2many associations, err: ", err.Error())
+	}
 
 	// SetMaxIdleConns 用于设置连接池中空闲连接的最大数量。
 	sqlDB.SetMaxIdleConns(10)
