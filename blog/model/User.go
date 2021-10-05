@@ -57,6 +57,16 @@ func CheckLogin(username string, password string) errmsg.ErrCode {
 	return errmsg.SUCCEED
 }
 
+//查询某用户是否存在
+func DoesUserExist(usrid int) errmsg.ErrCode {
+	var usr User
+	var err = db.Model(&User{}).Where("id = ?", usrid).First(&usr).Error
+	if err.Error() == "record not found" {
+		return errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
+	}
+	return errmsg.SUCCEED
+}
+
 //查询用户名是否已被占用
 func IsUsernameUsed(username string) errmsg.ErrCode {
 	var usr User
@@ -101,6 +111,9 @@ func GetUserList(PageSize int, PageNum int) []User {
 
 //查询用户写的文章
 func GetArticlesUnderUser(PageSize int, PageNum int, authorid int) ([]Article, errmsg.ErrCode) {
+	if DoesUserExist(authorid) == errmsg.ERROR_USER_DOES_NOT_EXIST {
+		return nil, errmsg.ERROR_USER_DOES_NOT_EXIST
+	}
 	var articles []Article
 	var err = db.Model(&Article{}).
 		//		Preload("User").
