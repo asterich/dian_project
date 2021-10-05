@@ -62,7 +62,7 @@ func DoesUserExist(usrid int) errmsg.ErrCode {
 	var usr User
 	var err = db.Model(&User{}).Where("id = ?", usrid).First(&usr).Error
 	if err.Error() == "record not found" {
-		return errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
+		return errmsg.ERROR_USER_DOES_NOT_EXIST
 	}
 	return errmsg.SUCCEED
 }
