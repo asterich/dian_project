@@ -61,7 +61,7 @@ func CheckLogin(username string, password string) errmsg.ErrCode {
 func DoesUserExist(usrid int) errmsg.ErrCode {
 	var usr User
 	var err = db.Model(&User{}).Where("id = ?", usrid).First(&usr).Error
-	if err.Error() == "record not found" {
+	if err == gorm.ErrRecordNotFound {
 		return errmsg.ERROR_USER_DOES_NOT_EXIST
 	}
 	return errmsg.SUCCEED
