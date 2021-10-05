@@ -58,6 +58,7 @@ func DoesArticleExist(articleid int) errmsg.ErrCode {
 //创建文章
 func CreateArticle(article *Article) errmsg.ErrCode {
 	var err = db.Create(&article).Error
+	db.Model(&User{}).Association("Articles").Append(article)
 	if err != nil {
 		return errmsg.ERROR
 	}

@@ -49,6 +49,27 @@ func GetUserList(c *gin.Context) {
 	})
 }
 
+//查询单个分类下的文章
+func GetArticlesUnderUser(c *gin.Context) {
+	var PageSize, _ = strconv.Atoi(c.Query("pagesize"))
+	var PageNum, _ = strconv.Atoi(c.Query("pagenum"))
+	var userid, _ = strconv.Atoi(c.Param("id"))
+
+	if PageSize == 0 {
+		PageSize = -1
+	}
+	if PageNum == 0 {
+		PageNum = -1
+	}
+
+	var data, code = model.GetArticlesUnderUser(PageSize, PageNum, userid)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    data,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
+
 //编辑个人信息
 //请求的JSON格式为：
 /*

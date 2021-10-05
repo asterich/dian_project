@@ -32,7 +32,7 @@ type User struct {
 	Information `gorm:"embedded"`
 
 	//文章
-	Articles []Article `gorm:"foreignkey:AuthorID"`
+	//	Articles []Article `gorm:"foreignkey:AuthorID"`
 }
 
 //新增用户
@@ -100,13 +100,20 @@ func GetUserList(PageSize int, PageNum int) []User {
 }
 
 //查询用户写的文章
-func GetArticlesUnderUser(PageSize int, PageNum int) []Article {
+func GetArticlesUnderUser(PageSize int, PageNum int, authorid int) ([]Article, errmsg.ErrCode) {
 	var articles []Article
-	var err = db.Model(&Article{}).Preload("User").Limit(PageSize).Offset((PageNum - 1) * PageSize).Find(&articles).Error
+	var err = db.Model(&Article{}).
+		//		Preload("User").
+		Where("author_id = ?", authorid).
+		Limit(PageSize).
+		Offset((PageNum - 1) * PageSize).
+		Find(&articles).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil
+		return nil, errmsg.ERROR
+	} else if len(articles) == 0 {
+		return nil, errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
 	}
-	return articles
+	return articles, errmsg.SUCCEED
 }
 
 //编辑个人信息
