@@ -24,6 +24,10 @@ type Article struct {
 func GetArticle(id int) (Article, errmsg.ErrCode) {
 	var article Article
 	var err = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
+	if err.Error() == "record not found" {
+		log.Println("Article does not exist")
+		return article, errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
+	}
 	if err != nil {
 		log.Println("Failed to get article, err: ", err)
 		return article, errmsg.ERROR
@@ -44,9 +48,9 @@ func GetArticleList(PageSize int, PageNum int) []Article {
 //查询文章是否存在
 func DoesArticleExist(articleid int) errmsg.ErrCode {
 	var article Article
-	db.Model(&User{}).Where("id = ?", articleid).First(&article)
-	if article.ID == 0 {
-		return errmsg.ERROR_USERNAME_USED
+	var err = db.Model(&Article{}).Where("id = ?", articleid).First(&article).Error
+	if err.Error() == "record not found" {
+		return errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
 	}
 	return errmsg.SUCCEED
 }
