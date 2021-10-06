@@ -92,8 +92,8 @@ func AddTag2Article(id int, tagname string) errmsg.ErrCode {
 	var tag Tag
 	var err3 = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
 	if err3 != nil {
-		log.Println(err3.Error())
-		return errmsg.ERROR
+		log.Println("Failed to find article, err: ", err3.Error())
+		return errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
 	}
 	var err4 = db.Model(&Tag{}).Where("name = ?", tagname).First(&tag).Error
 	if err4 != nil {
@@ -113,9 +113,13 @@ func AddTag2Article(id int, tagname string) errmsg.ErrCode {
 //添加评论
 func AddComment2Article(id int, comment Comment) errmsg.ErrCode {
 	var article Article
-	db.Model(&Article{}).Where("id = ?", id).First(&article)
+	var err = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
+	if err != nil {
+		log.Println("Failed to load article, err: ", err.Error())
+		return errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
+	}
 	article.Comments = append(article.Comments, comment)
-	var err = db.Save(&article).Error
+	err = db.Save(&article).Error
 	if err != nil {
 		log.Println("Failed to add comment to article, err: ", err.Error())
 		return errmsg.ERROR
@@ -130,10 +134,10 @@ func GetAllCommentsUnderArticle(id int) ([]Comment, errmsg.ErrCode) {
 	var _ = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
 	var _ = db.Model(&Comment{}).Where("article_id = ?", id).Find(&comments).Error
 	if article.ID == 0 {
-		return []Comment{}, errmsg.ERROR_COMMENT_DOES_NOT_EXIST
+		return []Comment{}, errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
 	}
 	if len(comments) == 0 {
-		return comments, errmsg.ERROR
+		return comments, errmsg.ERROR_COMMENT_DOES_NOT_EXIST
 	}
 	//	if err1 != nil || err2 != nil {
 	//		log.Println("err1: ", err1.Error())
