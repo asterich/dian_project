@@ -4,6 +4,7 @@ import (
 	"blog/model"
 	"blog/utils/errmsg"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,3 +30,11 @@ func CreateTag(c *gin.Context) {
 //查询单个tag下的文章
 
 //删除tag
+func DeleteTag(c *gin.Context) {
+	var tagid, _ = strconv.Atoi(c.Param("id"))
+	var code = model.DeleteTag(tagid)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"message": errmsg.GetErrMsg(code),
+	})
+}

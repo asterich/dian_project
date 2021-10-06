@@ -29,6 +29,9 @@ const (
 	//CODE=4000 tag模块的错误
 	ERROR_TAG_DOES_NOT_EXIST = 4001 //标签不存在
 	ERROR_TAG_ALREADY_EXIXTS = 4002 //标签已存在
+
+	//CODE=5000 评论系统的错误
+	ERROR_COMMENT_DOES_NOT_EXIST = 5001 //评论不存在
 )
 
 var codeMsg = map[ErrCode]string{
@@ -50,7 +53,7 @@ var codeMsg = map[ErrCode]string{
 	ERROR_CATEGORY_DOES_NOT_EXIST: "分类不存在",
 	ERROR_CATEGORY_ALREADY_EXIXTS: "分类已存在",
 
-	ERROR_TAG_DOES_NOT_EXIST: "tag已存在",
+	ERROR_TAG_DOES_NOT_EXIST: "tag不存在",
 	ERROR_TAG_ALREADY_EXIXTS: "tag已存在",
 }
 

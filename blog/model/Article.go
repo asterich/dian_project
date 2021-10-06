@@ -18,7 +18,7 @@ type Article struct {
 	Contents    string    `gorm:"type:longtext;not null" json:"contents"`        //内容
 	Img         string    `gorm:"type:text;not null" json:"img"`                 //图片
 	Category    Category  `gorm:"foreignkey:CateID"`                             //分类
-	Tags        []Tag     `gorm:"many2many:article_tags"`                        //tag
+	Tags        []Tag     `gorm:"many2many:article_tag"`                         //tag
 	Comments    []Comment `gorm:"foreignkey:ArticleID"`                          //评论
 }
 
@@ -102,11 +102,9 @@ func AddTag2Article(id int, tagname string) errmsg.ErrCode {
 	}
 	article.Tags = append(article.Tags, tag)
 	tag.Articles = append(tag.Articles, article)
-	var err1 = db.Save(&article)
-	var err2 = db.Save(&tag)
-	if err1 != nil || err2 != nil {
-		log.Println("err1: ", err1.Error)
-		log.Println("err2: ", err2.Error)
+	var err1 = db.Save(&article).Error
+	if err1 != nil {
+		log.Println("err1: ", err1.Error())
 		return errmsg.ERROR
 	}
 	return errmsg.SUCCEED
@@ -131,6 +129,12 @@ func GetAllCommentsUnderArticle(id int) ([]Comment, errmsg.ErrCode) {
 	var article Article
 	var _ = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
 	var _ = db.Model(&Comment{}).Where("article_id = ?", id).Find(&comments).Error
+	if article.ID == 0 {
+		return []Comment{}, errmsg.ERROR_COMMENT_DOES_NOT_EXIST
+	}
+	if len(comments) == 0 {
+		return comments, errmsg.ERROR
+	}
 	//	if err1 != nil || err2 != nil {
 	//		log.Println("err1: ", err1.Error())
 	//		log.Println("err2: ", err2.Error())
@@ -139,9 +143,32 @@ func GetAllCommentsUnderArticle(id int) ([]Comment, errmsg.ErrCode) {
 	return comments, errmsg.SUCCEED
 }
 
+//删评
+func DeleteAllComment(id int) errmsg.ErrCode {
+	var article Article
+	var comments []Comment
+	var errcode errmsg.ErrCode
+	db.Model(&Article{}).Where("id = ?", id).First(&article)
+	db.Model(&article).Association("Comments").Find(&comments)
+	for _, comment := range comments {
+		errcode = DeleteComment(&comment, &article)
+		if errcode != errmsg.SUCCEED {
+			log.Println("Failed to delete comment whose id is:", comment.ID)
+			return errcode
+		}
+	}
+	return errcode
+}
+
 //删除文章
 func DeleteArticle(id int) errmsg.ErrCode {
-	var err = db.Model(&Article{}).Where("id = ?", id).Delete(&Article{}).Error
+	var errcode = DeleteAllComment(id)
+	if errcode != errmsg.SUCCEED {
+		return errcode
+	}
+	var article Article
+	db.Model(&Article{}).Where("id = ?", id).First(&article)
+	var err = db.Select("Tags").Delete(&article).Error
 	if err != nil {
 		log.Println(err.Error())
 		return errmsg.ERROR
