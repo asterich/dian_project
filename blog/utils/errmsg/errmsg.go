@@ -55,6 +55,8 @@ var codeMsg = map[ErrCode]string{
 
 	ERROR_TAG_DOES_NOT_EXIST: "tag不存在",
 	ERROR_TAG_ALREADY_EXIXTS: "tag已存在",
+
+	ERROR_COMMENT_DOES_NOT_EXIST: "评论不存在",
 }
 
 func GetErrMsg(code ErrCode) string {
