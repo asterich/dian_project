@@ -65,10 +65,17 @@ func EditArticle(c *gin.Context) {
 }
 
 //往文章里加tag
+//请求格式：
+/*
+	{
+		"name": string
+	}
+*/
 func AddTag2Article(c *gin.Context) {
 	var id, _ = strconv.Atoi(c.Param("id"))
-	var tagname = c.Query("tagname")
-	var code = model.AddTag2Article(id, tagname)
+	var tag model.Tag
+	_ = c.ShouldBindJSON(&tag)
+	var code = model.AddTag2Article(id, tag.Name)
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
 		"message": errmsg.GetErrMsg(code),

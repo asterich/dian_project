@@ -36,7 +36,9 @@ func InitRouter() *gin.Engine {
 
 		//标签管理接口
 		api_v1.GET("tag/create", v1.CreateTag)
+		api_v1.GET("tag/:id", v1.GetArticlesUnderTag)
 		api_v1.DELETE("tag/:id", v1.DeleteTag)
+
 	}
 
 	var adm = r.Group("api/v1")

@@ -28,6 +28,15 @@ func CreateTag(c *gin.Context) {
 }
 
 //查询单个tag下的文章
+func GetArticlesUnderTag(c *gin.Context) {
+	var tagid, _ = strconv.Atoi(c.Param("id"))
+	var articles, code = model.GetArticlesUnderTag(tagid)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    articles,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
 
 //删除tag
 func DeleteTag(c *gin.Context) {

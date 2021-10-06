@@ -34,10 +34,27 @@ func CreateTag(tag *Tag) errmsg.ErrCode {
 func DoesTagExist(tagid int) errmsg.ErrCode {
 	var tag Tag
 	var err = db.Model(&Tag{}).Where("id = ?", tagid).First(&tag).Error
-	if err == gorm.ErrRecordNotFound {
+	if err != gorm.ErrRecordNotFound {
 		return errmsg.ERROR_TAG_ALREADY_EXIXTS
 	}
 	return errmsg.SUCCEED
+}
+
+//获取tag下的所有文章
+func GetArticlesUnderTag(tagid int) ([]Article, errmsg.ErrCode) {
+	var tag Tag
+	var err1 = db.Model(&Tag{}).Where("id = ?", tagid).First(&tag).Error
+	if err1 != nil {
+		log.Println("Failed to find the tag whose id is : ", tagid, " err : ", err1)
+		return []Article{}, errmsg.ERROR_TAG_DOES_NOT_EXIST
+	}
+	var articles []Article
+	db.Model(&tag).Association("Articles").Find(&articles)
+	if len(articles) == 0 {
+		log.Println("Failed to get article")
+		return []Article{}, errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
+	}
+	return articles, errmsg.SUCCEED
 }
 
 //删除tag
