@@ -18,18 +18,16 @@ func sendJsonApi(c *gin.Context) {
 	if err := c.BindJSON(&json); err != nil {
 		log.Fatal(err.Error())
 	}
-}
-
-func addTimestampApi(c *gin.Context) {
 	json["timestamp"] = time.Now().Unix()
-	c.JSON(http.StatusOK, json)
+	c.JSON(http.StatusOK, gin.H{
+		"data": json,
+	})
 }
 
 func setupRouter() *gin.Engine {
 	var r = gin.Default()
 
-	r.POST("/sendjson", sendJsonApi)
-	r.GET("/hello", addTimestampApi)
+	r.POST("/hello", sendJsonApi)
 
 	return r
 }
