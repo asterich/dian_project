@@ -82,6 +82,18 @@ func AddTag2Article(c *gin.Context) {
 	})
 }
 
+//获取文章下的所有tag
+func GetAllTagsUnderArticle(c *gin.Context) {
+	var articleid, _ = strconv.Atoi(c.Param("id"))
+
+	var data, code = model.GetAllTagsUnderArticle(articleid)
+	c.JSON(http.StatusOK, gin.H{
+		"status":  code,
+		"data":    data,
+		"message": errmsg.GetErrMsg(code),
+	})
+}
+
 //往文章里添加评论
 //请求格式：
 /*

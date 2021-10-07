@@ -110,6 +110,26 @@ func AddTag2Article(id int, tagname string) errmsg.ErrCode {
 	return errmsg.SUCCEED
 }
 
+//获取文章下的所有tag
+func GetAllTagsUnderArticle(id int) ([]Tag, errmsg.ErrCode) {
+	var tags []Tag
+	var article Article
+	db.Model(&Article{}).Where("id = ?", id).First(&article)
+	db.Model(&article).Association("Tags").Find(&tags)
+	if article.ID == 0 {
+		return []Tag{}, errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
+	}
+	if len(tags) == 0 {
+		return tags, errmsg.ERROR_TAG_DOES_NOT_EXIST
+	}
+	//	if err1 != nil || err2 != nil {
+	//		log.Println("err1: ", err1.Error())
+	//		log.Println("err2: ", err2.Error())
+	//		return nil, errmsg.ERROR
+	//	}
+	return tags, errmsg.SUCCEED
+}
+
 //添加评论
 func AddComment2Article(id int, comment Comment) errmsg.ErrCode {
 	var article Article

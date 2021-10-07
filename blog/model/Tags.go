@@ -20,7 +20,7 @@ type ArticleTag struct {
 
 //创建tag
 func CreateTag(tag *Tag) errmsg.ErrCode {
-	if DoesTagExist(int(tag.ID)) == errmsg.ERROR_TAG_ALREADY_EXIXTS {
+	if DoesTagExist(tag.Name) == errmsg.ERROR_TAG_ALREADY_EXIXTS {
 		return errmsg.ERROR_TAG_ALREADY_EXIXTS
 	}
 	var err = db.Create(&tag).Error
@@ -31,9 +31,9 @@ func CreateTag(tag *Tag) errmsg.ErrCode {
 }
 
 //查询tag是否已存在
-func DoesTagExist(tagid int) errmsg.ErrCode {
+func DoesTagExist(tagname string) errmsg.ErrCode {
 	var tag Tag
-	var err = db.Model(&Tag{}).Where("id = ?", tagid).First(&tag).Error
+	var err = db.Model(&Tag{}).Where("name = ?", tagname).First(&tag).Error
 	if err != gorm.ErrRecordNotFound {
 		return errmsg.ERROR_TAG_ALREADY_EXIXTS
 	}

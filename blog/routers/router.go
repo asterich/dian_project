@@ -26,6 +26,7 @@ func InitRouter() *gin.Engine {
 
 		//文章管理接口
 		api_v1.GET("article/:id", v1.GetArticle)
+		api_v1.GET("article/:id/gettag", v1.GetAllTagsUnderArticle)
 		api_v1.GET("article/:id/getcomment", v1.GetAllCommentsUnderArticle)
 
 		//分类管理接口
