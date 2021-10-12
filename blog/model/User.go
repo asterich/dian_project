@@ -1,8 +1,10 @@
 package model
 
 import (
+	"blog/cache"
 	"blog/utils"
 	"blog/utils/errmsg"
+	"context"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -54,6 +56,22 @@ func CheckLogin(username string, password string) errmsg.ErrCode {
 	}
 	if isPwdCorrect, _ := utils.ValidatePassword(user.Password, password); !isPwdCorrect {
 		return errmsg.ERROR_PASSWORD_INCORRECT
+	}
+	return errmsg.SUCCEED
+}
+
+//登出
+func Logout(usrid int) errmsg.ErrCode {
+	var ctx = context.TODO()
+	var usr User
+	var err = db.Model(&User{}).Where("id = ?", usrid).First(&usr).Error
+	if err == gorm.ErrRecordNotFound {
+		return errmsg.ERROR_USER_DOES_NOT_EXIST
+	}
+	var _, err1 = cache.WhiteList.HDel(ctx, "whitelist", usr.Username).Result()
+	if err1 != nil {
+		log.Println(err1)
+		return errmsg.ERROR
 	}
 	return errmsg.SUCCEED
 }

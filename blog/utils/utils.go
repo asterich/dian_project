@@ -18,6 +18,11 @@ var (
 	Db     string
 	DbName string
 	DbPath string
+
+	// Redis configs
+	RedisAddr     string
+	RedisPassword string
+	RedisDB       int
 )
 
 func init() {
@@ -27,6 +32,7 @@ func init() {
 	}
 	LoadServer(file)
 	LoadDb(file)
+	LoadRedis(file)
 }
 
 func LoadServer(file *ini.File) {
@@ -43,4 +49,11 @@ func LoadDb(file *ini.File) {
 	Db = dbSection.Key("Db").String()
 	DbName = dbSection.Key("DbName").String()
 	DbPath = dbSection.Key("DbPath").String()
+}
+
+func LoadRedis(file *ini.File) {
+	var redisSection = file.Section("redis")
+	RedisAddr = redisSection.Key("RedisAddr").String()
+	RedisPassword = redisSection.Key("RedisPassword").String()
+	RedisDB = redisSection.Key("RedisDB").MustInt(0)
 }

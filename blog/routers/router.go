@@ -20,6 +20,7 @@ func InitRouter() *gin.Engine {
 		api_v1.GET("user/:id", v1.GetUserInfo)
 		api_v1.GET("users", v1.GetUserList)
 		api_v1.GET("user/:id/allarticle", v1.GetArticlesUnderUser)
+		api_v1.POST("user/:id/logout", v1.Logout)
 
 		//登陆系统
 		api_v1.POST("user/login", v1.Login)

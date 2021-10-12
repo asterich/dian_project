@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"blog/cache"
 	"blog/utils"
 	"blog/utils/errmsg"
+	"context"
 	"log"
 	"net/http"
 	"strings"
@@ -10,6 +12,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 var JwtKey = []byte(utils.JwtKey)
@@ -48,6 +51,7 @@ func ParseToken(token string) (*MyClaims, errmsg.ErrCode) {
 
 func JwtToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var ctx = context.TODO()
 		var tokenHeader = c.Request.Header.Get("Authorization")
 		var code errmsg.ErrCode
 		if tokenHeader == "" {
@@ -81,6 +85,15 @@ func JwtToken() gin.HandlerFunc {
 		}
 		if time.Now().Unix() > key.ExpiresAt {
 			code = errmsg.ERROR_TOKEN_OUT_OF_DATE
+			c.JSON(http.StatusOK, gin.H{
+				"status":  code,
+				"message": errmsg.GetErrMsg(code),
+			})
+			c.Abort()
+			return
+		}
+		if res, err := cache.WhiteList.HGet(ctx, "whitelist", key.Username).Result(); res == string(redis.Nil) || err != nil {
+			code = errmsg.ERROR_TOKEN_WRONG
 			c.JSON(http.StatusOK, gin.H{
 				"status":  code,
 				"message": errmsg.GetErrMsg(code),

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"blog/cache"
 	"blog/model"
 	"blog/routers"
 	"blog/utils"
@@ -8,8 +9,11 @@ import (
 
 func main() {
 
+	cache.StartRedis()
 	model.InitDb()
 
 	var r = routers.InitRouter()
 	r.Run(utils.HttpPort)
+
+	cache.EndRedis()
 }
