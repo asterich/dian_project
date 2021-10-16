@@ -26,7 +26,7 @@ func StartRedis() {
 
 func EndRedis() {
 	var ctx = context.TODO()
-	var res, err = WhiteList.Del(ctx, "whitelist").Result()
+	var res, err = WhiteList.FlushDB(ctx).Result()
 	if err != nil {
 		fmt.Println(res, err.Error())
 	}

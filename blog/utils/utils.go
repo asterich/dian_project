@@ -40,8 +40,7 @@ func LoadServer(file *ini.File) {
 	AppMode = serverSection.Key("AppMode").String()
 	HttpPort = serverSection.Key("HttpPort").String()
 	JwtKey = serverSection.Key("JwtKey").String()
-	MaxLoginTime = serverSection.Key("JwtKey").MustUint()
-
+	MaxLoginTime = serverSection.Key("MaxLoginTime").MustUint()
 }
 
 func LoadDb(file *ini.File) {

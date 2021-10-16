@@ -4,11 +4,14 @@ import (
 	"blog/cache"
 	"blog/middleware"
 	"blog/model"
+	"blog/utils"
 	"blog/utils/errmsg"
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,7 +40,7 @@ func Login(c *gin.Context) {
 		log.Println("errcode:", errcode)
 	}
 	var ctx = context.TODO()
-	cache.WhiteList.HMSet(ctx, "whitelist", data.Username, token)
+	cache.WhiteList.Set(ctx, fmt.Sprintf("whitelist_%s", data.Username), token, time.Duration(utils.MaxLoginTime)*time.Minute)
 	c.JSON(http.StatusOK, gin.H{
 		"status":  code,
 		"token":   token,

@@ -5,6 +5,7 @@ import (
 	"blog/utils"
 	"blog/utils/errmsg"
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -23,7 +24,9 @@ type MyClaims struct {
 }
 
 func GenerateToken(username string) (string, errmsg.ErrCode) {
-	var ExpireTime = time.Now().Add(240 * time.Minute)
+	var duration = time.Duration(utils.MaxLoginTime) * time.Minute
+	log.Println(utils.MaxLoginTime, " ", duration)
+	var ExpireTime = time.Now().Add(duration)
 	var claims = MyClaims{
 		username,
 		jwt.StandardClaims{
@@ -92,7 +95,7 @@ func JwtToken() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if res, err := cache.WhiteList.HGet(ctx, "whitelist", key.Username).Result(); res == string(redis.Nil) || err != nil {
+		if res, err := cache.WhiteList.Get(ctx, fmt.Sprintf("whitelist_%s", key.Username)).Result(); res == string(redis.Nil) || err != nil {
 			code = errmsg.ERROR_TOKEN_WRONG
 			c.JSON(http.StatusOK, gin.H{
 				"status":  code,

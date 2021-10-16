@@ -15,5 +15,5 @@ func main() {
 	var r = routers.InitRouter()
 	r.Run(utils.HttpPort)
 
-	cache.EndRedis()
+	//	cache.EndRedis()
 }

@@ -5,6 +5,7 @@ import (
 	"blog/utils"
 	"blog/utils/errmsg"
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -68,7 +69,7 @@ func Logout(usrid int) errmsg.ErrCode {
 	if err == gorm.ErrRecordNotFound {
 		return errmsg.ERROR_USER_DOES_NOT_EXIST
 	}
-	var _, err1 = cache.WhiteList.HDel(ctx, "whitelist", usr.Username).Result()
+	var _, err1 = cache.WhiteList.Del(ctx, fmt.Sprintf("whitelist_%s", usr.Username)).Result()
 	if err1 != nil {
 		log.Println(err1)
 		return errmsg.ERROR
