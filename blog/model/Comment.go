@@ -16,7 +16,7 @@ type Comment struct {
 
 //删除单个评论
 func DeleteComment(comment *Comment, article *Article) errmsg.ErrCode {
-	db.Model(&article).Association("Comments").Delete(comment)
+	//	db.Model(&article).Association("Comments").Delete(comment)
 	db.Delete(comment)
 	return errmsg.SUCCEED
 }

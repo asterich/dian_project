@@ -152,7 +152,7 @@ func GetAllCommentsUnderArticle(id int) ([]Comment, errmsg.ErrCode) {
 	var comments []Comment
 	var article Article
 	var _ = db.Model(&Article{}).Where("id = ?", id).First(&article).Error
-	var _ = db.Model(&Comment{}).Where("article_id = ?", id).Find(&comments).Error
+	var _ = db.Model(&Comment{}).Unscoped().Where("article_id = ?", id).Find(&comments).Error
 	if article.ID == 0 {
 		return []Comment{}, errmsg.ERROR_ARTICLE_DOES_NOT_EXIST
 	}

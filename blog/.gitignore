@@ -3,3 +3,5 @@
 /data/
 *.eddx
 *.png
+go.mod
+go.sum
