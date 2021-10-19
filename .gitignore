@@ -1,5 +1,6 @@
-blog/.idea/
-blog/.vscode/
-blog/data/
+/blog/.idea/
+/blog/.vscode/
+/blog/data/
 *.eddx
 *.png
+.DS_Store
