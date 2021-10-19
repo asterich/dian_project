@@ -3,3 +3,4 @@ blog/.vscode/
 blog/data/
 *.eddx
 *.png
+.DS_Store
